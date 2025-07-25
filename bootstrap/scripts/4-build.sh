@@ -230,3 +230,7 @@ rm -f *.bak
 
 PHARO_SOURCES_PREFIX=$(echo "${PHARO_NAME_PREFIX}" | cut -d'-' -f 1 | cut -d'.' -f 1-2)
 zip "${PHARO_IMAGE_NAME}.zip" ${PHARO_IMAGE_NAME}.* ${PHARO_SOURCES_PREFIX}*.sources pharo.version
+
+# move final image archive outside cache
+cd -
+mv "${BOOTSTRAP_CACHE}/${PHARO_IMAGE_NAME}.zip" "./${PHARO_IMAGE_NAME}.zip"
