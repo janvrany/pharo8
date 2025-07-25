@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - 'Pharo8.0'
+
+  pull_request:
+    branches:
+      - 'Pharo8.0'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Pharo 8 image"
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Fetch commits and tags
+        run: |
+          git fetch --unshallow
+          git fetch --tags
+
+      - name: Setup
+        run: |
+          sudo dpkg --add-architecture i386 && sudo apt update
+          sudo apt install zlib1g:i386 libssh2-1:i386
+          (wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_i386.deb \
+            && rm -rf /tmp/openssl && mkdir /tmp/openssl \
+            && dpkg -x libssl1.0.0_1.0.2n-1ubuntu5.13_i386.deb /tmp/openssl \
+            && sudo cp -arv /tmp/openssl/usr /)
+
+      - name: Build image
+        run: |
+          env
+          mkdir BUILD
+          cd BUILD
+          BUILD_NUMBER=${{ github.run_number }} BOOTSTRAP_ARCH=64 BOOTSTRAP_REPOSITORY=$(realpath ..) ../bootstrap/scripts/bootstrap.sh
