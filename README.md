@@ -1,37 +1,8 @@
-# Pharo
+# Pharo 8
 
-This repository contains sources of the [Pharo language](http://pharo.org/). Pharo is a pure object-oriented programming language and a powerful environment, focused on simplicity and immediate feedback (think IDE and OS rolled into one).
-
-![Pharo 6 screenshot](https://pbs.twimg.com/media/DBpdIGrXkAA8SJ1.jpg)
-
-## Download Pharo
-
-To download the Pharo stable version for your platform, please visit:
-
-- [http://pharo.org/download](http://pharo.org/download)
-
-## Virtual machine
-
-This repository contains only sources of the Pharo image. The virtual machine source code is managed in a separate repository:
-
-- [https://github.com/pharo-project/opensmalltalk-vm](https://github.com/pharo-project/opensmalltalk-vm)
-
-## Automated Builds
-
-This repository is being built on a [Jenkins server](https://ci.inria.fr/pharo-ci-jenkins2) and uploaded to [files.pharo.org](https://files.pharo.org).
-
-- [Latest build - 64bit](http://files.pharo.org/image/80/latest-64.zip)
-- [Latest build - 32bit](http://files.pharo.org/image/80/latest.zip) 
-
-The minimal image contains the basic Pharo packages without the graphical user interface. It is useful as a base for server-side applications deployment.
-
-- [Minimal image latest build - 64bit](http://files.pharo.org/image/80/latest-minimal-64.zip)
-- [Minimal image latest build - 32bit](http://files.pharo.org/image/80/latest-minimal-32.zip) 
-
+This repository contains a *fork* of Pharo 8 used for ST25 development.
 
 ## Bootstrapping Pharo from sources
-
-To bootstrap a new Pharo image you need the latest stable version of Pharo. For more information about bootstrapping, refer to [guillep/PharoBootstrap](https://github.com/guillep/PharoBootstrap).
 
 The bootstrapping can be done on a properly-named branch using the following script:
 
@@ -47,10 +18,25 @@ __Tip:__ You can set `BOOTSTRAP_REPOSITORY` and `BOOTSTRAP_CACHE` environment va
 
 __Note:__ If you are on a branch that doesn't follow the expected naming convention ('`PharoX.Y`'), then the script will pick an appropriate default (such as `Pharo7.0`). To build Pharo8.0 from a custom branch, you need to set `BRANCH_NAME=Pharo8.0` before the bootstrap script is run. 
 
+## Setting up build host
 
-## File format
+### Ubuntu 18
 
-This source code repository is exported in [Tonel format](https://github.com/pharo-vcs/tonel). In this format, packages are represented as directories and each class is inside a single file.
+```
+sudo dpkg --add-architecture i386 && sudo apt update
+sudo apt install zlib1g:i386 libssh2-1:i386 libssl1.0.0:i386
+```
+
+### Ubuntu 22
+
+```
+sudo dpkg --add-architecture i386 && sudo apt update
+sudo apt install zlib1g:i386 libssh2-1:i386
+(wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_i386.deb \
+	&& rm -rf /tmp/openssl && mkdir /tmp/openssl \
+	&& dpkg -x libssl1.0.0_1.0.2n-1ubuntu5.13_i386.deb /tmp/openssl \
+	&& sudo cp -arv /tmp/openssl/usr /)
+```
 
 ## How to contribute
 
