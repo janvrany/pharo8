@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    branches:
+      - 'Pharo8.0'
+
+jobs:
+  release:
+    name: "Prepare Pharo 8 release"
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Fetch commits and tags
+        run: |
+          git fetch --unshallow
+          git fetch --tags
+
+      - name: Setup
+        run: |
+          sudo dpkg --add-architecture i386 && sudo apt update
+          sudo apt install zlib1g:i386 libssh2-1:i386
+          (wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_i386.deb \
+            && rm -rf /tmp/openssl && mkdir /tmp/openssl \
+            && dpkg -x libssl1.0.0_1.0.2n-1ubuntu5.13_i386.deb /tmp/openssl \
+            && sudo cp -arv /tmp/openssl/usr /)
+
+      - name: Build image
+        run: |
+          mkdir BUILD
+          cd BUILD
+          BUILD_NUMBER=${{ github.run_number }} BOOTSTRAP_ARCH=64 BOOTSTRAP_REPOSITORY=$(realpath ..) ../bootstrap/scripts/bootstrap.sh
+
+      - name: Create release artifacts
+        run: |
+          mv BUILD/Pharo8.0-*-64bit-*.zip BUILD/pharo64.zip
+
+      # See https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: true # release candidate
+          allowUpdates: true
+          replacesArtifacts: true
+          draft: true
+          generateReleaseNotes: true
+          tag: ${{ steps.date.outputs.date }}
+          artifacts: BUILD/pharo64.zip
